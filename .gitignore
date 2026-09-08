@@ -58,3 +58,6 @@ dkms.conf
 *.gcov
 *.gcda
 *.gcno
+
+# Output folder
+build/

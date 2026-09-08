@@ -1,0 +1,34 @@
+name: nicht-collections CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-test-bench:
+    name: GCC C11 Test & Benchmark Suite
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Install System Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc make libmath-c-dev
+
+    - name: Run Clean Build & Unit Tests
+      run: |
+        make clean
+        make test
+
+    - name: Run Production Benchmarks
+      run: |
+        make bench
+
+    - name: Verify Memory Alignment & Static Invariants
+      run: |
+        gcc -O3 -Wall -Wextra -Werror -std=c11 -D_POSIX_C_SOURCE=200809L -Iinclude tests/test_collections.c -lm -o build/bin/test_strict
+        ./build/bin/test_strict
