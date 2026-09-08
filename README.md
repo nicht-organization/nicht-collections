@@ -65,4 +65,4 @@ make bench  # Run performance benchmarks
 * **`include/nicht/spectral_index.h`** — **93.33%** *(28 / 30 lines)*
 
 ## License
-This project is released into the public domain under [The Unlicense][LICENSE].
+This project is released into the public domain under [The Unlicense](LICENSE)
