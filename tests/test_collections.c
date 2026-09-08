@@ -7,8 +7,7 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include "nicht/phi_heap.h"
-#include "nicht/spectral_index.h"
+#include "nicht/collections.h"
 
 static void test_phi_heap_basic(void) {
     PhiHeap *heap = phi_heap_create(16);
