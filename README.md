@@ -26,6 +26,7 @@ nicht-collections/
 ├── dev_clean_build.sh
 └── LICENSE                     # The Unlicense
 ```
+
 ## Quickstart
 Build and execute the unit tests and performance benchmarks:
 
@@ -33,6 +34,7 @@ Build and execute the unit tests and performance benchmarks:
 chmod +x dev_clean_build.sh
 ./dev_clean_build.sh
 ```
+
 Or manually using make:
 
 ```bash

@@ -8,7 +8,7 @@
 
 #define MAX_K 8
 
-typedef struct alignas(64) {
+typedef struct __attribute__((aligned(64))) {
     uint64_t graph_id;
     uint32_t node_count;
     float spectrum[MAX_K];

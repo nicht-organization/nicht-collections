@@ -20,20 +20,25 @@ all: test bench
 $(BIN_DIR):
 	mkdir -p $(BIN_DIR)
 
-$(TEST_BIN):$(TEST_SRC) | $(BIN_DIR)$(CC) $(CFLAGS)$< $(LDFLAGS) -o$@
+# Fix here: ensured target uses '| $(BIN_DIR)' without extra characters
+$(TEST_BIN): $(TEST_SRC) | $(BIN_DIR)
+	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
-$(BENCH_PHI_BIN):$(BENCH_PHI_SRC) | $(BIN_DIR)$(CC) $(CFLAGS)$< $(LDFLAGS) -o$@
+$(BENCH_PHI_BIN): $(BENCH_PHI_SRC) | $(BIN_DIR)
+	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
-$(BENCH_SPECTRAL_BIN):$(BENCH_SPECTRAL_SRC) | $(BIN_DIR)$(CC) $(CFLAGS)$< $(LDFLAGS) -o$@
+$(BENCH_SPECTRAL_BIN): $(BENCH_SPECTRAL_SRC) | $(BIN_DIR)
+	$(CC) $(CFLAGS) $< $(LDFLAGS) -o $@
 
 test: $(TEST_BIN)
 	@echo "--- Running Unit Tests ---"
 	@./$(TEST_BIN)
 
-bench: $(BENCH_PHI_BIN)$(BENCH_SPECTRAL_BIN)
+bench: $(BENCH_PHI_BIN) $(BENCH_SPECTRAL_BIN)
 	@echo "--- Running Benchmarks ---"
 	@./$(BENCH_PHI_BIN)
 	@./$(BENCH_SPECTRAL_BIN)
 
 clean:
 	rm -rf $(BUILD_DIR)
+	

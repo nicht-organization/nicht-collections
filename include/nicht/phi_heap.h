@@ -1,6 +1,7 @@
 #ifndef NICHT_PHI_HEAP_H
 #define NICHT_PHI_HEAP_H
 
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -18,6 +19,7 @@ typedef struct {
 static inline PhiHeap* phi_heap_create(uint32_t capacity) {
     PhiHeap *heap = (PhiHeap*)malloc(sizeof(PhiHeap));
     if (!heap) return NULL;
+
     if (posix_memalign((void**)&heap->data, 64, capacity * sizeof(PhiElement)) != 0) {
         free(heap);
         return NULL;
@@ -32,6 +34,12 @@ static inline void phi_heap_destroy(PhiHeap *heap) {
         if (heap->data) free(heap->data);
         free(heap);
     }
+}
+
+static inline int phi_heap_peek_min(const PhiHeap *heap, PhiElement *out) {
+    if (heap->size == 0) return 0;
+    *out = heap->data[0];
+    return 1;
 }
 
 static inline int phi_heap_insert(PhiHeap *heap, uint64_t key, uint64_t value) {
