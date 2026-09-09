@@ -14,14 +14,24 @@ typedef struct {
 } nicht_bitvector_t;
 
 static inline nicht_bitvector_t* nicht_bv_create(size_t total_bits) {
+    // Guard against arithmetic overflow (SIZE_MAX - 63)
+    if (total_bits > SIZE_MAX - 63) return NULL;
+    
     nicht_bitvector_t *bv = (nicht_bitvector_t*)malloc(sizeof(nicht_bitvector_t));
     bv->total_bits = total_bits;
     bv->num_words = (total_bits + 63) / 64;
     bv->num_blocks = (bv->num_words + 7) / 8; // 512-bit block intervals
 
     // 64-byte cache-line alignment
-    posix_memalign((void**)&bv->words, 64, bv->num_words * sizeof(uint64_t));
-    posix_memalign((void**)&bv->block_rank, 64, bv->num_blocks * sizeof(uint32_t));
+    if(posix_memalign((void**)&bv->words, 64, bv->num_words * sizeof(uint64_t)) != 0) {
+        free(bv);
+        return NULL;
+    }
+    if(posix_memalign((void**)&bv->block_rank, 64, bv->num_blocks * sizeof(uint32_t)) != 0) {
+        free(bv->words);
+        free(bv);
+        return NULL;
+    }
 
     for (size_t i = 0; i < bv->num_words; i++) bv->words[i] = 0;
     for (size_t i = 0; i < bv->num_blocks; i++) bv->block_rank[i] = 0;
@@ -44,7 +54,7 @@ static inline void nicht_bv_build_index(nicht_bitvector_t *bv) {
     }
 }
 
-// O(1) Rank Query: count 1-bits up to idx
+// O(1) Rank Query: count 1-bits up to idx (inclusive)
 static inline size_t nicht_bv_rank1(const nicht_bitvector_t *bv, size_t idx) {
     if (idx >= bv->total_bits) idx = bv->total_bits - 1;
     
@@ -56,7 +66,10 @@ static inline size_t nicht_bv_rank1(const nicht_bitvector_t *bv, size_t idx) {
         rank += __builtin_popcountll(bv->words[i]);
     }
     
-    uint64_t mask = (1ULL << (idx % 64 + 1)) - 1;
+    // Safely generate bitmask for remainder bits within word [0 .. idx % 64]
+    uint32_t bit_pos = idx % 64;
+    uint64_t mask = (bit_pos == 63) ? ~0ULL : ((1ULL << (bit_pos + 1)) - 1);
+    
     rank += __builtin_popcountll(bv->words[word_idx] & mask);
     
     return rank;

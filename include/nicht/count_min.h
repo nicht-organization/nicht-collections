@@ -13,9 +13,16 @@ typedef struct {
 } nicht_cm_t;
 
 static inline nicht_cm_t* nicht_cm_create(size_t width) {
+    if (width > SIZE_MAX / (NICHT_CM_DEPTH * sizeof(uint32_t))) return NULL;
+
     nicht_cm_t *cm = (nicht_cm_t*)malloc(sizeof(nicht_cm_t));
+    if (!cm) return NULL;
     cm->width = width;
-    posix_memalign((void**)&cm->table, 64, NICHT_CM_DEPTH * width * sizeof(uint32_t));
+    
+    if (posix_memalign((void**)&cm->table, 64, NICHT_CM_DEPTH * width * sizeof(uint32_t)) != 0) {
+        free(cm);
+        return NULL;
+    }
     memset(cm->table, 0, NICHT_CM_DEPTH * width * sizeof(uint32_t));
     return cm;
 }
