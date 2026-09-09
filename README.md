@@ -4,7 +4,7 @@ High-efficiency, zero-alloc, cache-aligned data structures & primitives across l
 
 ## Features
 
-- **`phi_heap.h`**: Cache-line aligned (64-byte), array-backed implicit Priority Queue. Eliminates dynamic per-node heap allocations (`malloc`) and pointer chasing[cite: 1].
+- **`phi_heap.h`**: Cache-line aligned (64-byte), array-backed implicit Priority Queue. Eliminates dynamic per-node heap allocations (`malloc`) and pointer chasing.
 - **`spectral_index.h`**: $O(1)$ zero-alloc Laplacian spectral graph invariant metric index.
 - **`succinct_bv.h`**: Succinct bit-vector with $O(1)$ rank operations utilizing CPU population count intrinsics (`__builtin_popcountll`) and 64-byte block-interleaved index arrays.
 - **`disjoint_set.h`**: Contiguous, zero-alloc Union-Find with path compression and union-by-rank graph optimizations.
@@ -32,12 +32,12 @@ Modern CPUs spend significantly more cycles waiting for memory access (DRAM) tha
 
 | Feature / Trait | Standard Fibonacci Heap | Nicht Phi-Heap |
 | :--- | :--- | :--- |
-| **Data Layout** | Graph of dynamic nodes (`left`, `right`, `parent`, `child`)[cite: 1] | Contiguous 64-byte cache-aligned memory buffer |
+| **Data Layout** | Graph of dynamic nodes (`left`, `right`, `parent`, `child`) | Contiguous 64-byte cache-aligned memory buffer |
 | **Node Allocation** | Dynamic per-node `malloc()` on `insert` | **Zero dynamic allocation** on hot paths |
-| **Tree Traversal** | Pointer dereferencing across fragmented memory[cite: 1] | Implicit bit-shift arithmetic (`idx >> 1`, `idx << 1`) |
-| **Decrease Key** | $O(1)$ amortized (via subtree cutting)[cite: 1] | Omitted / Handled via Lazy Over-Pushing |
-| **L1/L2 Cache Locality**| Poor (Frequent pointer chasing / RAM stalls)[cite: 1] | **Maximum** (Sequential array SIMD/CPU prefetching) |
-| **Memory Overhead** | 32–48 bytes of pointer metadata per node[cite: 1] | **0 bytes metadata overhead**[cite: 1] |
+| **Tree Traversal** | Pointer dereferencing across fragmented memory | Implicit bit-shift arithmetic (`idx >> 1`, `idx << 1`) |
+| **Decrease Key** | $O(1)$ amortized (via subtree cutting) | Omitted / Handled via Lazy Over-Pushing |
+| **L1/L2 Cache Locality**| Poor (Frequent pointer chasing / RAM stalls) | **Maximum** (Sequential array SIMD/CPU prefetching) |
+| **Memory Overhead** | 32–48 bytes of pointer metadata per node | **0 bytes metadata overhead** |
 
 ---
 
